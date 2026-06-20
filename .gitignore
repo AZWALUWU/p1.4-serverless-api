@@ -1,0 +1,23 @@
+# Dependency directoris
+node_modules/
+jspm_packages/
+
+# Serverless framework artifacts
+.serverless/
+
+# LocalStack volume data (jangan di-upload karena isinya data database lokal kamu)
+volume/
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables (jika nanti pakai file .env)
+.env
+.env.local
+.env.*.local
+
+# Operating System files
+.DS_Store
+Thumbs.db

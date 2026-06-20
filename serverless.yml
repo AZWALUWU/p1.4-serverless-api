@@ -1,0 +1,81 @@
+service: serverless-todo-api
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: us-east-1
+  environment:
+    NODE_ENV: ${opt:stage, 'dev'}
+  
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource: "arn:aws:dynamodb:us-east-1:*:table/Todos"
+
+plugins:
+  - serverless-localstack
+
+custom:
+  localstack:
+    stages:
+      - local
+    host: http://localhost:4566
+    autostart: false
+
+functions:
+  createTodo:
+    handler: src/createTodo.handler
+    events:
+      - http:
+          path: todos
+          method: post
+          cors: true
+  getTodos:
+    handler: src/getTodos.handler
+    events:
+      - http:
+          path: todos
+          method: get
+          cors: true
+  getTodo:
+    handler: src/getTodo.handler
+    events:
+      - http:
+          path: todos/{id}
+          method: get
+          cors: true
+  updateTodo:
+    handler: src/updateTodo.handler
+    events:
+      - http:
+          path: todos/{id}
+          method: put
+          cors: true
+  deleteTodo:
+    handler: src/deleteTodo.handler
+    events:
+      - http:
+          path: todos/{id}
+          method: delete
+          cors: true
+
+resources:
+  Resources:
+    TodosTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: Todos
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
